@@ -11,8 +11,8 @@ namespace Screw.Api
     public class ScrewApiClient
     {
         private readonly HttpClient httpClient;
-        private readonly string apiUrl = "https://api.screwltd.com/";
-
+        //private readonly string apiUrl = "https://api.screwltd.com/";
+        private readonly string apiUrl = "http://localhost:3000/";
         public ScrewApiClient()
         {
             httpClient = new HttpClient();
@@ -35,7 +35,9 @@ namespace Screw.Api
             if (!string.IsNullOrEmpty(response))
             {
                 var jsonResponse = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
-                return jsonResponse.ContainsKey("access_key") ? jsonResponse["access_key"] : null;
+                string access_Key = jsonResponse.ContainsKey("access_key") ? jsonResponse["access_key"] : null;
+                string api_Key = jsonResponse.ContainsKey("api_key") ? jsonResponse["api_key"] : null;
+                return $"{access_Key}|{api_Key}";
             }
 
             return null;
@@ -61,10 +63,10 @@ namespace Screw.Api
             }
         }
 
-        public async Task<bool> AuthenticateApp(string appKey, string accessKey)
+        public async Task<bool> AuthenticateApp(string appKey, string apiKey, string username, string password)
         {
-            var queryParams = $"?app_key={appKey}";
-            var response = await PostRequest("auth_app" + queryParams, string.Empty, accessKey);
+            var queryParams = $"?app_key={appKey}&username={username}&password={password}";
+            var response = await PostRequest("auth_app" + queryParams, string.Empty, apiKey);
 
             if (!string.IsNullOrEmpty(response))
             {
